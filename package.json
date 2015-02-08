@@ -1,0 +1,14 @@
+{
+  "name": "game-inputs",
+  "version": "0.0.1",
+  "description": "Simple module to abstract key/mouse events for games.",
+  "main": "inputs.js",
+  "scripts": {
+    "test": "beefy example/index.js --live --open"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "vkey": "^1.0.0"
+  }
+}
