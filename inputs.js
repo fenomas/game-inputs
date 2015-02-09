@@ -10,18 +10,19 @@ module.exports = function(domElement, options) {
 
 
 /*
- *    Simple inputs manager to abstract key/mouse inputs.
+ *   Simple inputs manager to abstract key/mouse inputs.
+ *        Inspired by (and where applicable stealing code from) 
+ *        game-shell: https://github.com/mikolalysenko/game-shell
  *  
- *  inputs.bind( 'move-right', 'R', '<right>' )
- *  inputs.bind( 'move-left', 'A' )
+ *  inputs.bind( 'move-right', 'D', '<right>' )
+ *  inputs.bind( 'move-left',  'A' )
  *  inputs.unbind( 'move-left' )
  *  
  *  inputs.down.on( 'move-right',  function( binding, event ) {})
  *  inputs.up.on(   'move-right',  function( binding, event ) {})
- *  inputs.mouse.on('move',        function( dx, dy ) {})
- *  inputs.mouse.on('wheel',       function( amount ) {})
  *
  *  inputs.state['move-right']  // true when corresponding keys are down
+ *  inputs.state.dx             // mouse x movement since tick() was last called
  *  inputs.getBindings()        // [ 'move-right', 'move-left', ... ]
 */
 
@@ -29,7 +30,7 @@ module.exports = function(domElement, options) {
 function Inputs(element, opts) {
 
   // settings
-  this.element = element
+  this.element = element || document
   opts = opts || {}
   this.preventDefaults = !!opts.preventDefaults
   this.stopPropagation = !!opts.stopPropagation
@@ -37,16 +38,17 @@ function Inputs(element, opts) {
   // emitters
   this.down = new EventEmitter()
   this.up = new EventEmitter()
-  this.mouse = new EventEmitter()
 
   // state object to be queried
-  this.state = {}
-  
+  this.state = {
+    dx: 0, dy: 0
+  }
+
   // internal state
   this._bindings = {}
   this._keyStates = {}
   this._bindPressCounts = {}
-  
+
   // register for dom events
   this.initEvents()
 }
@@ -59,11 +61,15 @@ function Inputs(element, opts) {
 */ 
 
 Inputs.prototype.initEvents = function() {
+  // keys
   window.addEventListener( 'keydown', onKeyEvent.bind(undefined,this,true), false )
   window.addEventListener( 'keyup', onKeyEvent.bind(undefined,this,false), false )
+  // mouse buttons
   this.element.addEventListener("mousedown", onMouseEvent.bind(undefined,this,true), false)
   this.element.addEventListener("mouseup", onMouseEvent.bind(undefined,this,false), false)
-
+  this.element.oncontextmenu = onContextMenu.bind(undefined,this)
+  // mouse other
+  this.element.addEventListener("mousemove", onMouseMove.bind(undefined,this), false)
 }
 
 
@@ -79,6 +85,7 @@ Inputs.prototype.bind = function(binding) {
     }
     this._bindings[vkeyCode] = arr
   }
+  this.state[binding] = !!this.state[binding]
 }
 
 // search out and remove all keycodes bound to a given binding
@@ -88,6 +95,11 @@ Inputs.prototype.unbind = function(binding) {
     var i = arr.indexOf(binding)
     if (i>-1) { arr.splice(i,1) }
   }
+}
+
+// tick function - clears out cumulative mouse movement state variables
+Inputs.prototype.tick = function() {
+  this.state.dx = this.state.dy = 0
 }
 
 
@@ -108,9 +120,7 @@ Inputs.prototype.getBindings = function() {
 function onKeyEvent(inputs, wasDown, ev) {
   handleKeyEvent( ev.keyCode, vkey[ev.keyCode], wasDown, inputs, ev )
 }
-//function onKeyUp(inputs, ev) {
-//  handleKeyEvent( ev.keyCode, vkey[ev.keyCode], false, inputs, ev )
-//}
+
 function onMouseEvent(inputs, wasDown, ev) {
   // simulate a code out of range of vkey
   var keycode = -1 - ev.button
@@ -118,12 +128,21 @@ function onMouseEvent(inputs, wasDown, ev) {
   handleKeyEvent( keycode, vkeycode, wasDown, inputs, ev )
   return false
 }
-//function onMouseUp(inputs, ev) {
-//  var vkeycode = ev.button + 1
-//  handleKeyEvent( vkeycode, false, inputs, ev )
-//  return false
-//}
 
+function onContextMenu(inputs) {
+  // cancel context menu if there's a binding for right mousebutton
+  var arr = inputs._bindings['<mouse 3>']
+  if (arr) return false
+    }
+
+function onMouseMove(inputs, ev) {
+  // for now, just populate the state object with mouse movement
+  var dx = ev.movementX || ev.mozMovementX || ev.webkitMovementX || 0,
+      dy = ev.movementY || ev.mozMovementY || ev.webkitMovementY || 0
+  inputs.state.dx += dx
+  inputs.state.dy += dy
+  // TODO: verify if this is working/useful during pointerlock?
+}
 
 
 /*
@@ -137,7 +156,7 @@ function handleKeyEvent(keycode, vcode, wasDown, inputs, ev) {
   if (!arr) { return }
   if (inputs.preventDefaults) ev.preventDefault()
   if (inputs.stopPropagation) ev.stopPropagation()
-  
+
   // if the key's state has changed, handle an event for all bindings
   var currstate = inputs._keyStates[keycode]
   if ( XOR(currstate, wasDown) ) {
@@ -157,7 +176,7 @@ function handleBindingEvent(binding, wasDown, inputs, ev) {
   ct += wasDown ? 1 : -1
   if (ct<0) { ct = 0 } // shouldn't happen
   inputs._bindPressCounts[binding] = ct
-  
+
   // emit event if binding's state has changed
   var currstate = inputs.state[binding]
   if ( XOR(currstate, ct) ) {
