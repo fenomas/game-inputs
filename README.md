@@ -40,7 +40,7 @@ function myGameLoop() {
 }
 ```
 
-Here's the [interactive demo]().
+Here's the [interactive demo](http://andyhall.github.io/game-inputs/).
 
 ## API
 
