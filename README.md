@@ -66,7 +66,7 @@ State object populated with these properties:
 
 #### `inputs.tick()`
 
-Resets (cumulative) `state.dx`/`state.dy` values. Call this in your game loop (after chcking inputs) 
+Resets (cumulative) `state.dx`/`state.dy` values. Call this in your game loop (after checking inputs) 
 if you want to use this module to track inputs each frame.
 
 ## Events
