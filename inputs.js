@@ -132,8 +132,8 @@ function onMouseEvent(inputs, wasDown, ev) {
 function onContextMenu(inputs) {
   // cancel context menu if there's a binding for right mousebutton
   var arr = inputs._bindings['<mouse 3>']
-  if (arr) return false
-    }
+  if (arr) { return false }
+}
 
 function onMouseMove(inputs, ev) {
   // for now, just populate the state object with mouse movement
