@@ -42,6 +42,20 @@ function myGameLoop() {
 
 Here's the [interactive demo](http://andyhall.github.io/game-inputs/).
 
+## Installation
+
+```shell
+npm install game-inputs
+```
+
+If you want to test locally:
+
+```shell
+cd game-inputs
+npm install
+npm test
+```
+
 ## API
 
 #### `var inputs = require("game-inputs")( element, options )`
