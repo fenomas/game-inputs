@@ -23,7 +23,7 @@ inputs.up.on( 'move-right', function(){showOutput('move-right released')} )
 inputs.up.on( 'fire',       function(){showOutput('fire released')} )
 inputs.up.on( 'RMB',        function(){showOutput('RMB released')} )
 
-var bindingNames = inputs.getBindings()  
+var boundKeys = inputs.getBoundKeys()  
 
 
 
@@ -39,7 +39,7 @@ function addDiv(txt, html) {
   return div
 }
 addDiv('The following keys are bound:')
-addDiv(bindingNames.sort().join(', '))
+addDiv(boundKeys.sort().join(', '))
 addDiv('<p />Event output:', true)
 var textarea = document.createElement('textarea')
 textarea.style.width = "300px"
