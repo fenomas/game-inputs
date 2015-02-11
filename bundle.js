@@ -24,7 +24,7 @@ inputs.up.on( 'move-right', function(){showOutput('move-right released')} )
 inputs.up.on( 'fire',       function(){showOutput('fire released')} )
 inputs.up.on( 'RMB',        function(){showOutput('RMB released')} )
 
-var bindingNames = inputs.getBindings()  
+var boundKeys = inputs.getBoundKeys()  
 
 
 
@@ -40,7 +40,7 @@ function addDiv(txt, html) {
   return div
 }
 addDiv('The following keys are bound:')
-addDiv(bindingNames.sort().join(', '))
+addDiv(boundKeys.sort().join(', '))
 addDiv('<p />Event output:', true)
 var textarea = document.createElement('textarea')
 textarea.style.width = "300px"
@@ -113,9 +113,9 @@ function Inputs(element, opts) {
   }
 
   // internal state
-  this._bindings = {}
-  this._keyStates = {}
-  this._bindPressCounts = {}
+  this._keybindmap = {}       // { 'vkeycode' : [ 'binding', 'binding2' ] }
+  this._keyStates = {}        // { 'vkeycode' : boolean }
+  this._bindPressCounts = {}  // { 'binding' : int }
 
   // register for dom events
   this.initEvents()
@@ -142,24 +142,24 @@ Inputs.prototype.initEvents = function() {
 
 
 // Usage:  bind( bindingName, vkeyCode, vkeyCode.. )
-//    Note that inputs._bindings maps vkey codes to binding names
-//    e.g. this._bindings['a'] = 'move-left'
+//    Note that inputs._keybindmap maps vkey codes to binding names
+//    e.g. this._keybindmap['a'] = 'move-left'
 Inputs.prototype.bind = function(binding) {
   for (var i=1; i<arguments.length; ++i) {
     var vkeyCode = arguments[i]
-    var arr = this._bindings[vkeyCode] || []
+    var arr = this._keybindmap[vkeyCode] || []
     if (arr.indexOf(binding) == -1) {
       arr.push(binding)
     }
-    this._bindings[vkeyCode] = arr
+    this._keybindmap[vkeyCode] = arr
   }
   this.state[binding] = !!this.state[binding]
 }
 
 // search out and remove all keycodes bound to a given binding
 Inputs.prototype.unbind = function(binding) {
-  for (var b in this._bindings) {
-    var arr = this._bindings[b]
+  for (var b in this._keybindmap) {
+    var arr = this._keybindmap[b]
     var i = arr.indexOf(binding)
     if (i>-1) { arr.splice(i,1) }
   }
@@ -172,9 +172,9 @@ Inputs.prototype.tick = function() {
 
 
 
-Inputs.prototype.getBindings = function() {
+Inputs.prototype.getBoundKeys = function() {
   var arr = []
-  for (var b in this._bindings) { arr.push(b) }
+  for (var b in this._keybindmap) { arr.push(b) }
   return arr
 }
 
@@ -199,7 +199,7 @@ function onMouseEvent(inputs, wasDown, ev) {
 
 function onContextMenu(inputs) {
   // cancel context menu if there's a binding for right mousebutton
-  var arr = inputs._bindings['<mouse 3>']
+  var arr = inputs._keybindmap['<mouse 3>']
   if (arr) { return false }
 }
 
@@ -219,7 +219,7 @@ function onMouseMove(inputs, ev) {
 
 
 function handleKeyEvent(keycode, vcode, wasDown, inputs, ev) {
-  var arr = inputs._bindings[vcode]
+  var arr = inputs._keybindmap[vcode]
   // don't prevent defaults if there's no binding
   if (!arr) { return }
   if (inputs.preventDefaults) ev.preventDefault()
