@@ -40,7 +40,21 @@ function myGameLoop() {
 }
 ```
 
-Here's the [interactive demo]().
+Here's the [interactive demo](http://andyhall.github.io/game-inputs/).
+
+## Installation
+
+```shell
+npm install game-inputs
+```
+
+If you want to test locally:
+
+```shell
+cd game-inputs
+npm install
+npm test
+```
 
 ## API
 
@@ -66,7 +80,7 @@ State object populated with these properties:
 
 #### `inputs.tick()`
 
-Resets (cumulative) `state.dx`/`state.dy` values. Call this in your game loop (after chcking inputs) 
+Resets (cumulative) `state.dx`/`state.dy` values. Call this in your game loop (after checking inputs) 
 if you want to use this module to track inputs each frame.
 
 ## Events
@@ -86,4 +100,5 @@ Exactly as previous but for key release events.
 * Hasn't yet been tested widely. 
 * Doesn't yet try to handle edge cases where the user clicks out of the browser while a key is pressed, or similar.
 * Doesn't handle mouse scroll events
+* The state object could usefully report a number of press events since the last tick, rather than just a boolean. 
 

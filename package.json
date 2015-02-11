@@ -6,9 +6,17 @@
   "scripts": {
     "test": "beefy example/index.js --live --open"
   },
-  "author": "",
+  "author": "Andy Hall",
   "license": "MIT",
+  "keywords": [ "game", "inputs", "key", "mouse", "events" ],
   "dependencies": {
     "vkey": "^1.0.0"
+  },
+  "repository" : {
+    "type" : "git",
+    "url" : "https://github.com/andyhall/game-inputs"
+  },
+  "bugs" : {
+    "url" : "https://github.com/andyhall/game-inputs/issues"
   }
 }
