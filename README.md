@@ -6,7 +6,7 @@ Does stuff like:
 * Virtual key bindings (i.e. map 'W' to 'move-forward')
 * Sends up/down events for each binding
 * Correctly handles edge cases, like two keys bound to the same action being pressed at once
-* Exposes a state object with booleans for each binding, and mouse dx/dy values
+* Exposes a `state` object with booleans for each binding, and mouse dx/dy values
 
 This module is inspired by, and where possible steals code from, 
 [game-shell](https://github.com/mikolalysenko/game-shell). But it's much more minimal. 
@@ -33,8 +33,9 @@ function myGameLoop() {
   // query state of bindings in game loop
   if ( inputs.state['move-left'] )  { goLeft() } // etc..
   
-  // get mouse movement data
+  // handle mouse inputs
   handleMouse( inputs.state.dx, inputs.state.dy ) // mouse dx/dy
+  handleScroll( inputs.state.scrolly ) // or scrollx/scrollz
   // calling tick() clears cumulative mouse movement vars
   inputs.tick()
 }
@@ -77,6 +78,7 @@ Removes all key bindings for the given name.
 State object populated with these properties:
 * a boolean for whether each keybinding is currently pressed. E.g. `inputs.state.jump` is a boolean for whether a key (or keys) bound to the `jump` action are currently pressed.
 * `dx`, `dy` - How far the mouse has (cumulatively) moved since `inputs#tick` was last called.
+* `scrollx`, `scrolly`, `scrollz` - accumulated scroll amounts (scaled to pixel values) since `inputs#tick` was last called.
 
 #### `inputs.tick()`
 
@@ -99,6 +101,5 @@ Exactly as previous but for key release events.
 
 * Hasn't yet been tested widely. 
 * Doesn't yet try to handle edge cases where the user clicks out of the browser while a key is pressed, or similar.
-* Doesn't handle mouse scroll events
 * The state object could usefully report a number of press events since the last tick, rather than just a boolean. 
 
