@@ -2,7 +2,8 @@
 
 var vkey = require('vkey')
 var EventEmitter = require('events').EventEmitter;
-
+// mousewheel polyfill borrowed directly from game-shell
+var addMouseWheel = require("./lib/mousewheel-polyfill.js")
 
 module.exports = function(domElement, options) {
   return new Inputs(domElement, options)
@@ -41,7 +42,8 @@ function Inputs(element, opts) {
 
   // state object to be queried
   this.state = {
-    dx: 0, dy: 0
+    dx: 0, dy: 0, 
+    scrollx: 0, scrolly: 0, scrollz: 0
   }
 
   // internal state
@@ -70,6 +72,8 @@ Inputs.prototype.initEvents = function() {
   this.element.oncontextmenu = onContextMenu.bind(undefined,this)
   // mouse other
   this.element.addEventListener("mousemove", onMouseMove.bind(undefined,this), false)
+  addMouseWheel(this.element, onMouseWheel.bind(undefined,this), false)
+  console.log(this.element.clientHeight)
 }
 
 
@@ -100,6 +104,7 @@ Inputs.prototype.unbind = function(binding) {
 // tick function - clears out cumulative mouse movement state variables
 Inputs.prototype.tick = function() {
   this.state.dx = this.state.dy = 0
+  this.state.scrollx = this.state.scrolly = this.state.scrollz = 0
 }
 
 
@@ -142,6 +147,24 @@ function onMouseMove(inputs, ev) {
   inputs.state.dx += dx
   inputs.state.dy += dy
   // TODO: verify if this is working/useful during pointerlock?
+}
+
+function onMouseWheel(inputs, ev) {
+  // basically borrowed from game-shell
+  var scale = 1
+  switch(ev.deltaMode) {
+    case 0: scale=1;   break;  // Pixel
+    case 1: scale=12;  break;  // Line
+    case 2:  // page
+      // TODO: investigagte when this happens, what correct handling is
+      scale = inputs.element.clientHeight || window.innerHeight
+      break;
+  }
+  // accumulate state
+  inputs.state.scrollx += ev.deltaX * scale
+  inputs.state.scrolly += ev.deltaY * scale
+  inputs.state.scrollz +=(ev.deltaZ * scale) || 0
+  return false
 }
 
 
