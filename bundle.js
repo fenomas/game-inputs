@@ -70,7 +70,8 @@ setInterval( showState, 200 )
 
 var vkey = require('vkey')
 var EventEmitter = require('events').EventEmitter;
-
+// mousewheel polyfill borrowed directly from game-shell
+var addMouseWheel = require("./lib/mousewheel-polyfill.js")
 
 module.exports = function(domElement, options) {
   return new Inputs(domElement, options)
@@ -109,7 +110,8 @@ function Inputs(element, opts) {
 
   // state object to be queried
   this.state = {
-    dx: 0, dy: 0
+    dx: 0, dy: 0, 
+    scrollx: 0, scrolly: 0, scrollz: 0
   }
 
   // internal state
@@ -138,6 +140,8 @@ Inputs.prototype.initEvents = function() {
   this.element.oncontextmenu = onContextMenu.bind(undefined,this)
   // mouse other
   this.element.addEventListener("mousemove", onMouseMove.bind(undefined,this), false)
+  addMouseWheel(this.element, onMouseWheel.bind(undefined,this), false)
+  console.log(this.element.clientHeight)
 }
 
 
@@ -168,6 +172,7 @@ Inputs.prototype.unbind = function(binding) {
 // tick function - clears out cumulative mouse movement state variables
 Inputs.prototype.tick = function() {
   this.state.dx = this.state.dy = 0
+  this.state.scrollx = this.state.scrolly = this.state.scrollz = 0
 }
 
 
@@ -210,6 +215,24 @@ function onMouseMove(inputs, ev) {
   inputs.state.dx += dx
   inputs.state.dy += dy
   // TODO: verify if this is working/useful during pointerlock?
+}
+
+function onMouseWheel(inputs, ev) {
+  // basically borrowed from game-shell
+  var scale = 1
+  switch(ev.deltaMode) {
+    case 0: scale=1;   break;  // Pixel
+    case 1: scale=12;  break;  // Line
+    case 2:  // page
+      // TODO: investigagte when this happens, what correct handling is
+      scale = inputs.element.clientHeight || window.innerHeight
+      break;
+  }
+  // accumulate state
+  inputs.state.scrollx += ev.deltaX * scale
+  inputs.state.scrolly += ev.deltaY * scale
+  inputs.state.scrollz +=(ev.deltaZ * scale) || 0
+  return false
 }
 
 
@@ -270,7 +293,67 @@ function XOR(a,b) {
 
 
 
-},{"events":4,"vkey":3}],3:[function(require,module,exports){
+},{"./lib/mousewheel-polyfill.js":3,"events":5,"vkey":4}],3:[function(require,module,exports){
+//Adapted from here: https://developer.mozilla.org/en-US/docs/Web/Reference/Events/wheel?redirectlocale=en-US&redirectslug=DOM%2FMozilla_event_reference%2Fwheel
+
+var prefix = "", _addEventListener, onwheel, support;
+
+// detect event model
+if ( window.addEventListener ) {
+  _addEventListener = "addEventListener";
+} else {
+  _addEventListener = "attachEvent";
+  prefix = "on";
+}
+
+// detect available wheel event
+support = "onwheel" in document.createElement("div") ? "wheel" : // Modern browsers support "wheel"
+          document.onmousewheel !== undefined ? "mousewheel" : // Webkit and IE support at least "mousewheel"
+          "DOMMouseScroll"; // let's assume that remaining browsers are older Firefox
+
+function _addWheelListener( elem, eventName, callback, useCapture ) {
+  elem[ _addEventListener ]( prefix + eventName, support == "wheel" ? callback : function( originalEvent ) {
+    !originalEvent && ( originalEvent = window.event );
+
+    // create a normalized event object
+    var event = {
+      // keep a ref to the original event object
+      originalEvent: originalEvent,
+      target: originalEvent.target || originalEvent.srcElement,
+      type: "wheel",
+      deltaMode: originalEvent.type == "MozMousePixelScroll" ? 0 : 1,
+      deltaX: 0,
+      delatZ: 0,
+      preventDefault: function() {
+        originalEvent.preventDefault ?
+          originalEvent.preventDefault() :
+          originalEvent.returnValue = false;
+      }
+    };
+    
+    // calculate deltaY (and deltaX) according to the event
+    if ( support == "mousewheel" ) {
+      event.deltaY = - 1/40 * originalEvent.wheelDelta;
+      // Webkit also support wheelDeltaX
+      originalEvent.wheelDeltaX && ( event.deltaX = - 1/40 * originalEvent.wheelDeltaX );
+    } else {
+      event.deltaY = originalEvent.detail;
+    }
+
+    // it's time to fire the callback
+    return callback( event );
+  }, useCapture || false );
+}
+
+module.exports = function( elem, callback, useCapture ) {
+  _addWheelListener( elem, support, callback, useCapture );
+
+  // handle MozMousePixelScroll in older Firefox
+  if( support == "DOMMouseScroll" ) {
+    _addWheelListener( elem, "MozMousePixelScroll", callback, useCapture );
+  }
+};
+},{}],4:[function(require,module,exports){
 var ua = typeof window !== 'undefined' ? window.navigator.userAgent : ''
   , isOSX = /OS X/.test(ua)
   , isOpera = /Opera/.test(ua)
@@ -408,7 +491,7 @@ for(i = 112; i < 136; ++i) {
   output[i] = 'F'+(i-111)
 }
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
