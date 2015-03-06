@@ -1,6 +1,6 @@
 {
   "name": "game-inputs",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Simple module to abstract key/mouse events for games.",
   "main": "inputs.js",
   "scripts": {
@@ -8,15 +8,21 @@
   },
   "author": "Andy Hall",
   "license": "MIT",
-  "keywords": [ "game", "inputs", "key", "mouse", "events" ],
+  "keywords": [
+    "game",
+    "inputs",
+    "key",
+    "mouse",
+    "events"
+  ],
   "dependencies": {
     "vkey": "^1.0.0"
   },
-  "repository" : {
-    "type" : "git",
-    "url" : "https://github.com/andyhall/game-inputs"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/andyhall/game-inputs"
   },
-  "bugs" : {
-    "url" : "https://github.com/andyhall/game-inputs/issues"
+  "bugs": {
+    "url": "https://github.com/andyhall/game-inputs/issues"
   }
 }
