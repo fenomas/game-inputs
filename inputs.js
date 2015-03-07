@@ -73,7 +73,6 @@ Inputs.prototype.initEvents = function() {
   // mouse other
   this.element.addEventListener("mousemove", onMouseMove.bind(undefined,this), false)
   addMouseWheel(this.element, onMouseWheel.bind(undefined,this), false)
-  console.log(this.element.clientHeight)
 }
 
 
