@@ -1,6 +1,6 @@
 {
   "name": "game-inputs",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Simple module to abstract key/mouse events for games.",
   "main": "inputs.js",
   "scripts": {
