@@ -70,8 +70,11 @@ Inputs.prototype.initEvents = function() {
   this.element.addEventListener("mousedown", onMouseEvent.bind(undefined,this,true), false)
   this.element.addEventListener("mouseup", onMouseEvent.bind(undefined,this,false), false)
   this.element.oncontextmenu = onContextMenu.bind(undefined,this)
-  // mouse other
+  // touch/mouse movement
   this.element.addEventListener("mousemove", onMouseMove.bind(undefined,this), false)
+  this.element.addEventListener("touchmove", onMouseMove.bind(undefined,this), false)
+  this.element.addEventListener("touchstart", onTouchStart.bind(undefined,this), false)
+  // scroll/mousewheel
   addMouseWheel(this.element, onMouseWheel.bind(undefined,this), false)
 }
 
@@ -143,9 +146,39 @@ function onMouseMove(inputs, ev) {
   // for now, just populate the state object with mouse movement
   var dx = ev.movementX || ev.mozMovementX || ev.webkitMovementX || 0,
       dy = ev.movementY || ev.mozMovementY || ev.webkitMovementY || 0
+  // ad-hoc experimental touch support
+  if (ev.touches && (dx|dy)===0) {
+    var xy = getTouchMovement(ev)
+    dx = xy[0]
+    dy = xy[1]
+  }
   inputs.state.dx += dx
   inputs.state.dy += dy
-  // TODO: verify if this is working/useful during pointerlock?
+}
+
+// experimental - for touch events, extract useful dx/dy
+var lastTouchX = 0
+var lastTouchY = 0
+var lastTouchID = null
+
+function onTouchStart(inputs, ev) {
+  var touch = ev.changedTouches[0]
+  lastTouchX = touch.clientX
+  lastTouchY = touch.clientY
+  lastTouchID = touch.identifier
+}
+
+function getTouchMovement(ev) {
+  var touch
+  var touches = ev.changedTouches
+  for (var i=0; i<touches.length; ++i) {
+    if (touches[i].identifier == lastTouchID) touch = touches[i]
+  }
+  if (!touch) return [0,0]
+  var res = [ touch.clientX-lastTouchX, touch.clientY-lastTouchY ]
+  lastTouchX = touch.clientX
+  lastTouchY = touch.clientY
+  return res
 }
 
 function onMouseWheel(inputs, ev) {
