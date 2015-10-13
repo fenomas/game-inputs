@@ -144,8 +144,8 @@ function onContextMenu(inputs) {
 
 function onMouseMove(inputs, ev) {
   // for now, just populate the state object with mouse movement
-  var dx = ev.movementX || ev.mozMovementX || ev.webkitMovementX || 0,
-      dy = ev.movementY || ev.mozMovementY || ev.webkitMovementY || 0
+  var dx = ev.movementX || ev.mozMovementX || 0,
+      dy = ev.movementY || ev.mozMovementY || 0
   // ad-hoc experimental touch support
   if (ev.touches && (dx|dy)===0) {
     var xy = getTouchMovement(ev)
