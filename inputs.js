@@ -70,6 +70,8 @@ Inputs.prototype.initEvents = function() {
   this.element.addEventListener("mousedown", onMouseEvent.bind(undefined,this,true), false)
   this.element.addEventListener("mouseup", onMouseEvent.bind(undefined,this,false), false)
   this.element.oncontextmenu = onContextMenu.bind(undefined,this)
+  // treat dragstart like mouseup - idiotically, mouseup doesn't fire after a drag starts (!)
+  this.element.addEventListener("dragstart", onMouseEvent.bind(undefined,this,false), false)
   // touch/mouse movement
   this.element.addEventListener("mousemove", onMouseMove.bind(undefined,this), false)
   this.element.addEventListener("touchmove", onMouseMove.bind(undefined,this), false)
