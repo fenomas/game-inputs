@@ -51,6 +51,10 @@ function Inputs(element, opts) {
     this._keyStates = {}        // { 'vkeycode' : boolean }
     this._bindPressCounts = {}  // { 'binding' : int }
 
+    // needed to work around a bug in Mac Chrome 75
+    // https://bugs.chromium.org/p/chromium/issues/detail?id=977093
+    this._ignoreMousemoveOnce = false
+
     // register for dom events
     this.initEvents()
 }
@@ -78,6 +82,9 @@ Inputs.prototype.initEvents = function () {
     this.element.addEventListener("touchstart", onTouchStart.bind(undefined, this), false)
     // scroll/mousewheel
     addMouseWheel(this.element, onMouseWheel.bind(undefined, this), false)
+    // temp bug workaround, see above
+    document.addEventListener("pointerlockchange", onLockChange.bind(undefined, this), false)
+    document.addEventListener("mozpointerlockchange", onLockChange.bind(undefined, this), false)
 }
 
 
@@ -122,7 +129,11 @@ Inputs.prototype.getBoundKeys = function () {
 
 
 /*
- *   INTERNALS - DOM EVENT HANDLERS
+ *
+ *
+ *      INTERNALS - DOM EVENT HANDLERS
+ *
+ *
 */
 
 
@@ -145,6 +156,11 @@ function onContextMenu(inputs) {
 }
 
 function onMouseMove(inputs, ev) {
+    // bug workaround, see top of file
+    if (inputs._ignoreMousemoveOnce) {
+        inputs._ignoreMousemoveOnce = false
+        return
+    }
     // for now, just populate the state object with mouse movement
     var dx = ev.movementX || ev.mozMovementX || 0,
         dy = ev.movementY || ev.mozMovementY || 0
@@ -201,9 +217,22 @@ function onMouseWheel(inputs, ev) {
     return false
 }
 
+function onLockChange(inputs, ev) {
+    var locked = document.pointerLockElement
+        || document.mozPointerLockElement
+        || null
+    if (locked) inputs._ignoreMousemoveOnce = true
+}
+
+
+
 
 /*
+ *
+ *
  *   KEY BIND HANDLING
+ *
+ *
 */
 
 
@@ -244,8 +273,13 @@ function handleBindingEvent(binding, wasDown, inputs, ev) {
 }
 
 
+
+
 /*
+ *
+ *
  *    HELPERS
+ *
  *
 */
 
