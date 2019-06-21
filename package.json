@@ -3,6 +3,9 @@
     "version": "0.3.0",
     "description": "Simple module to abstract key/mouse events for games.",
     "main": "inputs.js",
+    "files": [
+        "/lib"
+    ],
     "scripts": {
         "test": "cd docs/ && webpack-dev-server",
         "build": "cd docs/ && webpack"
