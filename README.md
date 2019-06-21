@@ -49,7 +49,7 @@ Here's the [interactive demo](http://andyhall.github.io/game-inputs/).
 npm install game-inputs
 ```
 
-If you want to test locally:
+To test locally (with [webpack-dev-server](https://webpack.js.org/configuration/dev-server/)):
 
 ```shell
 cd game-inputs
