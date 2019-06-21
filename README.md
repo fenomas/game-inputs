@@ -99,7 +99,6 @@ Exactly as previous but for key release events.
 
 ## Todo:
 
-* Hasn't yet been tested widely. 
 * Doesn't yet try to handle edge cases where the user clicks out of the browser while a key is pressed, or similar.
 * The state object could usefully report a number of press events since the last tick, rather than just a boolean. 
 
