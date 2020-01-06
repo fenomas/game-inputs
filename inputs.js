@@ -206,7 +206,7 @@ function onMouseWheel(inputs, ev) {
         case 0: scale = 1; break  // Pixel
         case 1: scale = 12; break  // Line
         case 2:  // page
-            // TODO: investigagte when this happens, what correct handling is
+            // TODO: investigate when this happens, what correct handling is
             scale = inputs.element.clientHeight || window.innerHeight
             break
     }
