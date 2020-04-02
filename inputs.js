@@ -1,4 +1,3 @@
-'use strict'
 
 var vkey = require('vkey')
 var EventEmitter = require('events').EventEmitter
@@ -35,6 +34,8 @@ function Inputs(element, opts) {
     opts = opts || {}
     this.preventDefaults = !!opts.preventDefaults
     this.stopPropagation = !!opts.stopPropagation
+    this.allowContextMenu = !!opts.allowContextMenu
+    this.disabled = !!opts.disabled
 
     // emitters
     this.down = new EventEmitter()
@@ -150,9 +151,7 @@ function onMouseEvent(inputs, wasDown, ev) {
 }
 
 function onContextMenu(inputs) {
-    // cancel context menu if there's a binding for right mousebutton
-    var arr = inputs._keybindmap['<mouse 3>']
-    if (arr) { return false }
+    if (!inputs.allowContextMenu) return false
 }
 
 function onMouseMove(inputs, ev) {
@@ -267,7 +266,7 @@ function handleBindingEvent(binding, wasDown, inputs, ev) {
     var currstate = inputs.state[binding]
     if (XOR(currstate, ct)) {
         var emitter = wasDown ? inputs.down : inputs.up
-        emitter.emit(binding, ev)
+        if (!inputs.disabled) emitter.emit(binding, ev)
     }
     inputs.state[binding] = !!ct
 }

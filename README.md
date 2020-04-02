@@ -62,7 +62,17 @@ npm test
 #### `var inputs = require("game-inputs")( element, options )`
 
 * `element` - DOM element to attach mouse listeners to. Defaults to `document`.
-* `options` - Optional object with two possible parameters: `preventDefaults` and `stopPropagation`. If set, the module will call the corresponding function after handling DOM events.
+* `options` - Optional. Supported parameters:
+  * `preventDefaults` whether to prevent default behavior on handled events 
+  * `stopPropagation` same but for propagation
+  * `allowContextMenu` whether to let the context menu appear
+  * `disabled` no input events fire when this option is set
+
+All of the `options` parameters are also settable on the `inputs` object after creation:
+
+```js
+inputs.disabled = true   // temporarily stop emitting events
+```
 
 #### `inputs.bind( "bindName", "keycode", "keycode2", .. )`
 
