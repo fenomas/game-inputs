@@ -81,6 +81,7 @@ Inputs.prototype.initEvents = function () {
     this.element.addEventListener("mousemove", onMouseMove.bind(undefined, this), false)
     this.element.addEventListener("touchmove", onMouseMove.bind(undefined, this), false)
     this.element.addEventListener("touchstart", onTouchStart.bind(undefined, this), false)
+    this.element.addEventListener("touchend", onTouchEnd.bind(undefined, this), false)
     // scroll/mousewheel
     addMouseWheel(this.element, onMouseWheel.bind(undefined, this), false)
     // temp bug workaround, see above
@@ -179,10 +180,23 @@ var lastTouchY = 0
 var lastTouchID = null
 
 function onTouchStart(inputs, ev) {
-    var touch = ev.changedTouches[0]
-    lastTouchX = touch.clientX
-    lastTouchY = touch.clientY
-    lastTouchID = touch.identifier
+    // Only start a new touch if there isn't one ongoing
+    if (lastTouchID === null) {
+        var touch = ev.changedTouches[0]
+        lastTouchX = touch.clientX
+        lastTouchY = touch.clientY
+        lastTouchID = touch.identifier
+    }
+}
+
+function onTouchEnd(inputs, ev) {
+    // For the touchend event, changedTouches is a list of the touch points that have been removed from the surface
+    var touches = ev.changedTouches
+    for (var i = 0; i < touches.length; ++i) {
+        if (touches[i].identifier === lastTouchID) {
+            lastTouchID = null
+        }
+    }
 }
 
 function getTouchMovement(ev) {
