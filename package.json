@@ -24,9 +24,9 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/andyhall/game-inputs"
+        "url": "https://github.com/fenomas/game-inputs"
     },
     "bugs": {
-        "url": "https://github.com/andyhall/game-inputs/issues"
+        "url": "https://github.com/fenomas/game-inputs/issues"
     }
 }

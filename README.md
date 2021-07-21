@@ -41,7 +41,7 @@ function myGameLoop() {
 }
 ```
 
-Here's the [interactive demo](http://andyhall.github.io/game-inputs/).
+Here's the [interactive demo](http://fenomas.github.io/game-inputs/).
 
 ## Installation
 
