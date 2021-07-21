@@ -7,7 +7,7 @@ var addMouseWheel = require("./lib/mousewheel-polyfill.js")
 module.exports = function (domElement, options) {
     return new Inputs(domElement, options)
 }
-
+module.exports.Inputs = Inputs
 
 /*
  *   Simple inputs manager to abstract key/mouse inputs.
