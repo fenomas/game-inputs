@@ -73,7 +73,7 @@ Inputs.prototype.initEvents = function () {
     window.addEventListener('keyup', onKeyEvent.bind(undefined, this, false), false)
     // mouse buttons
     this.element.addEventListener("mousedown", onMouseEvent.bind(undefined, this, true), false)
-    this.element.addEventListener("mouseup", onMouseEvent.bind(undefined, this, false), false)
+    window.document.addEventListener("mouseup", onMouseEvent.bind(undefined, this, false), false)
     this.element.oncontextmenu = onContextMenu.bind(undefined, this)
     // treat dragstart like mouseup - idiotically, mouseup doesn't fire after a drag starts (!)
     this.element.addEventListener("dragstart", onMouseEvent.bind(undefined, this, false), false)
