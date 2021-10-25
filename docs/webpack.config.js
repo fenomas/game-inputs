@@ -1,4 +1,3 @@
-'use strict'
 
 var path = require('path')
 
@@ -10,9 +9,8 @@ module.exports = {
 		path: path.resolve('.'),
 		filename: 'bundle.js',
 	},
+    stats: "minimal",
 	devServer: {
-		inline: true,
-		host: "0.0.0.0",
-		stats: "minimal",
+        static: '.',
 	},
 }

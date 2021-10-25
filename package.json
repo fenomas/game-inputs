@@ -1,6 +1,6 @@
 {
     "name": "game-inputs",
-    "version": "0.4.1",
+    "version": "0.5.0",
     "description": "Simple module to abstract key/mouse events for games.",
     "main": "inputs.js",
     "files": [
@@ -20,8 +20,8 @@
         "events"
     ],
     "dependencies": {
-        "events": "^3.2.0",
-        "vkey": "^1.0.0"
+        "events": "^3.3.0",
+        "vkey": "^1.0.1"
     },
     "repository": {
         "type": "git",
