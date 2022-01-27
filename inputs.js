@@ -49,7 +49,7 @@ function Inputs(element, opts) {
 
     // internal state
     this._keybindmap = {}       // { 'vkeycode' : [ 'binding', 'binding2' ] }
-    this._keyStates = {}        // { 'vkeycode' : boolean }
+    this._keyStates = {}        // { 'code' : boolean }
     this._bindPressCounts = {}  // { 'binding' : int }
 
     // needed to work around a bug in Mac Chrome 75
@@ -140,14 +140,12 @@ Inputs.prototype.getBoundKeys = function () {
 
 
 function onKeyEvent(inputs, wasDown, ev) {
-    handleKeyEvent(ev.keyCode, vkey[ev.keyCode], wasDown, inputs, ev)
+    handleKeyEvent(ev.code, vkey[ev.keyCode], wasDown, inputs, ev)
 }
 
 function onMouseEvent(inputs, wasDown, ev) {
-    // simulate a code out of range of vkey
-    var keycode = -1 - ev.button
     var vkeycode = '<mouse ' + (ev.button + 1) + '>'
-    handleKeyEvent(keycode, vkeycode, wasDown, inputs, ev)
+    handleKeyEvent('Mouse' + (ev.button + 1), vkeycode, wasDown, inputs, ev)
     return false
 }
 
@@ -249,22 +247,28 @@ function onLockChange(inputs, ev) {
 */
 
 
-function handleKeyEvent(keycode, vcode, wasDown, inputs, ev) {
+function handleKeyEvent(code, vcode, wasDown, inputs, ev) {
     var arr = inputs._keybindmap[vcode]
+    var arr2 = inputs._keybindmap[code]
     // don't prevent defaults if there's no binding
-    if (!arr) { return }
+    if (!arr && !arr2) { return }
     if (inputs.preventDefaults) ev.preventDefault()
     if (inputs.stopPropagation) ev.stopPropagation()
 
     // if the key's state has changed, handle an event for all bindings
-    var currstate = inputs._keyStates[keycode]
+    var currstate = inputs._keyStates[code]
     if (XOR(currstate, wasDown)) {
         // for each binding: emit an event, and update cached state information
-        for (var i = 0; i < arr.length; ++i) {
-            handleBindingEvent(arr[i], wasDown, inputs, ev)
-        }
+        if (arr)
+            for (var i = 0; i < arr.length; ++i) {
+                handleBindingEvent(arr[i], wasDown, inputs, ev)
+            }
+        if (arr2)
+            for (var i = 0; i < arr2.length; ++i) {
+                handleBindingEvent(arr2[i], wasDown, inputs, ev)
+            }
     }
-    inputs._keyStates[keycode] = wasDown
+    inputs._keyStates[code] = wasDown
 }
 
 
