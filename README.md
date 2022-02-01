@@ -88,12 +88,13 @@ Otherwise, please see the source ;)
 
 ## History
 
- * `0.4.0` Modernization pass - adopts real physical key codes, Pointer events (still fallback to mouse), etc. Also adds proper docs/types.  
+ * `0.6.0` Modernization pass - adopts real physical key codes, Pointer events (still fallback to mouse), etc. Also adds proper docs/types.  
  Breaking changes:
    * now an ES module exporting a named `class`, not a factory function
    * Key binding names now use [KeyboardEvent.code](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/code) strings (e.g. `KeyA`, `Space`)
    * Bindings for mouse buttons are now `Mouse1`, `Mouse2`..
    * Mouse/scroll values (`dx,dy,scrollx,scrolly`) moved from `inputs.state` to `inputs.pointerState`
+ * `0.5.0` Minor features and dependency updates
  * `0.3.0` Stable release
 
 

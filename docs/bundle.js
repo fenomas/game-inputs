@@ -46,7 +46,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \***********************/
 /***/ ((module) => {
 
-eval("module.exports = JSON.parse('{\"name\":\"game-inputs\",\"version\":\"0.4.0\",\"description\":\"Simple library to abstract key/mouse events for games.\",\"main\":\"src/inputs.js\",\"typings\":\"dist/src/inputs.d.ts\",\"files\":[\"/src\",\"/dist\"],\"scripts\":{\"start\":\"cd docs/ && webpack serve\",\"build\":\"tsc; cd docs/ && webpack\"},\"author\":\"Andy Hall\",\"license\":\"ISC\",\"keywords\":[\"game\",\"inputs\",\"key\",\"mouse\",\"events\"],\"dependencies\":{\"events\":\"^3.3.0\"},\"repository\":{\"type\":\"git\",\"url\":\"https://github.com/fenomas/game-inputs\"},\"bugs\":{\"url\":\"https://github.com/fenomas/game-inputs/issues\"}}');\n\n//# sourceURL=webpack:///../package.json?");
+eval("module.exports = JSON.parse('{\"name\":\"game-inputs\",\"version\":\"0.6.0\",\"description\":\"Simple library to abstract key/mouse events for games.\",\"main\":\"src/inputs.js\",\"typings\":\"dist/src/inputs.d.ts\",\"files\":[\"/src\",\"/dist\"],\"scripts\":{\"start\":\"cd docs/ && webpack serve\",\"build\":\"tsc; cd docs/ && webpack\"},\"author\":\"Andy Hall\",\"license\":\"ISC\",\"keywords\":[\"game\",\"inputs\",\"key\",\"mouse\",\"events\"],\"dependencies\":{\"events\":\"^3.3.0\"},\"repository\":{\"type\":\"git\",\"url\":\"https://github.com/fenomas/game-inputs\"},\"bugs\":{\"url\":\"https://github.com/fenomas/game-inputs/issues\"}}');\n\n//# sourceURL=webpack:///../package.json?");
 
 /***/ })
 
