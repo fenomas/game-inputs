@@ -2,36 +2,53 @@
 <html lang="en">
 
 <head>
-  <title>noa-hello-world</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-  <style type="text/css">
-    body {
-      background-color: white;
-      margin: 2rem;
-      overflow: hidden;
-      -moz-user-select: none;
-      -webkit-user-select: none;
-      -ms-user-select: none;
-    }
-    .heading {
-      font-size: 120%;
-      margin-top: 1rem;
-    }
-    .content {
-      margin-left: 1rem;
-    }
-    .pointer-lock-target {
-      width: 250px;
-      height: 22px;
-      padding: 10px;
-      background-color: gold;
-    }
-  </style>
+    <title>game-inputs demo</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <style type="text/css">
+        body {
+            background-color: white;
+            margin: 2rem;
+        }
+
+        #registeredElement {
+            background-color: #e8e8e8;
+            border: solid 1px #888;
+            padding-left: 1rem;
+            width: 50%;
+            min-width: 400px;
+            touch-action: none;
+        }
+
+        .heading {
+            font-size: 120%;
+            margin-top: 1rem;
+        }
+
+        .content {
+            margin-left: 1rem;
+        }
+
+        .pointer-lock-target {
+            width: 250px;
+            height: 22px;
+            padding: 10px;
+            background-color: gold;
+        }
+
+        .highlight {
+            background-color: pink;
+        }
+    </style>
 </head>
 
 <body>
-  <script type="text/javascript" src="bundle.js"></script>
+    <strong>
+        DOM element registered to
+        <pre style="display: inline-block;">game-inputs</pre>:
+    </strong>
+    <div id="registeredElement"></div>
+    <script type="text/javascript" src="bundle.js"></script>
 </body>
 
 </html>

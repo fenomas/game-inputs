@@ -1,17 +1,19 @@
 {
     "name": "game-inputs",
-    "version": "0.5.0",
-    "description": "Simple module to abstract key/mouse events for games.",
-    "main": "inputs.js",
+    "version": "0.4.0",
+    "description": "Simple library to abstract key/mouse events for games.",
+    "main": "src/inputs.js",
+    "typings": "dist/src/inputs.d.ts",
     "files": [
-        "/lib"
+        "/src",
+        "/dist"
     ],
     "scripts": {
-        "test": "cd docs/ && webpack serve",
-        "build": "cd docs/ && webpack"
+        "start": "cd docs/ && webpack serve",
+        "build": "tsc; cd docs/ && webpack"
     },
     "author": "Andy Hall",
-    "license": "MIT",
+    "license": "ISC",
     "keywords": [
         "game",
         "inputs",
@@ -20,8 +22,7 @@
         "events"
     ],
     "dependencies": {
-        "events": "^3.3.0",
-        "vkey": "^1.0.1"
+        "events": "^3.3.0"
     },
     "repository": {
         "type": "git",

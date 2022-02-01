@@ -1,47 +1,63 @@
 game-inputs
 ==========
-A simple module for abstracting key/mouse input for games. 
+A simple library for abstracting key/mouse input for games. 
+
 Does stuff like:
 
-* Virtual key bindings (i.e. map 'W' to 'move-forward')
-* Sends up/down events for each binding
-* Correctly handles edge cases, like two keys bound to the same action being pressed at once
-* Exposes a `state` object with booleans for each binding, and mouse dx/dy values
+* Virtual key bindings (i.e. map one or more physical keys to a single action)
+* Emits down/up events for each binding (not each key)
+* Handles annoying edge cases, like overlapping events from two keys bound to the same action, or the browser losing focus while a key is pressed, etc.
+* Exposes objects with the current state of each binding, the number of press/release events since the last tick, etc.
+* Also tracks mouse/pointer events and scroll/wheel inputs
 
-This module is inspired by, and where possible steals code from, 
-[game-shell](https://github.com/mikolalysenko/game-shell). But it's much more minimal. 
-Canonical names for keycodes are as specified by [vkey](https://github.com/chrisdickinson/vkey/blob/master/index.js).
+Canonical names for physical keys are as specified by [KeyboardEvent.code](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/code). To check key codes, try the [live demo](http://fenomas.github.io/game-inputs/).
+
 
 ## Sample usage:
 
-```javascript
-var inputs = require('game-inputs')( myDomElement )
+```js
+import { GameInputs } from 'game-inputs'
 
-// bind movement keys to WASD and arrow keys
-inputs.bind( 'move-up',   'W', '<up>' )
-inputs.bind( 'move-left', 'A', '<left>' ) // etc...
+// instantiate
+var domElement = document.querySelector('...')
+var inputs = new GameInputs(domElement, {
+  preventDefaults: true, 
+  allowContextMenu: false,
+})
 
-// bind left mouse to "fire"
-inputs.bind( 'fire',  '<mouse 1>' )
+// bind an arbitrary event name to one or more physical key codes
+inputs.bind( 'move-fwd',  'KeyW' )
+inputs.bind( 'move-left', 'KeyA', 'ArrowLeft' )
 
-// catch down/up events
-inputs.down.on( 'fire',  myFunction( binding, event) {/* ... */}  )
-inputs.up.on( 'fire',  myFunction( binding, event) {/* ... */}  )
+// listen to that event name for press/release events
+inputs.down.on( 'move-fwd', (ev) => { startMovingFwd() } )
+inputs.up.on( 'move-fwd', (ev) => { stopMovingFwd() } )
 
+// mouse/pointer buttons are bindable as `Mouse1`, `Mouse2`, ...
+inputs.bind( 'shoot', 'Mouse1' )
+inputs.bind( 'RMB', 'Mouse3' )
+
+// you can also query various input states in the game loop
 function myGameLoop() {
-  
-  // query state of bindings in game loop
-  if ( inputs.state['move-left'] )  { goLeft() } // etc..
-  
-  // handle mouse inputs
-  handleMouse( inputs.state.dx, inputs.state.dy ) // mouse dx/dy
-  handleScroll( inputs.state.scrolly ) // or scrollx/scrollz
-  // calling tick() clears cumulative mouse movement vars
+  // current boolean state of a key or mouse button
+  var leftCurrentlyPressed = inputs.state['move-left']
+  var shootButtonPressed = inputs.state['shoot']
+
+  // pointer movement and scroll/wheel data
+  var mouseMovedBy = [inputs.pointerState.dx, inputs.pointerState.dy]
+  var scrolledBy = inputs.pointerState.scrolly
+
+  // accumulated number of presses/releases since the last tick
+  var fwdPresses = inputs.pressCount['move-fwd']
+  var fwdReleases = inputs.releaseCount['move-fwd']
+
+  // calling tick() zeroes out cumulative mouse/scroll/press/release values
   inputs.tick()
 }
 ```
 
 Here's the [interactive demo](http://fenomas.github.io/game-inputs/).
+
 
 ## Installation
 
@@ -49,66 +65,45 @@ Here's the [interactive demo](http://fenomas.github.io/game-inputs/).
 npm install game-inputs
 ```
 
-To test locally (with [webpack-dev-server](https://webpack.js.org/configuration/dev-server/)):
-
-```shell
-cd game-inputs
-npm install
-npm test
-```
 
 ## API
 
-#### `var inputs = require("game-inputs")( element, options )`
+The various methods and properties are documented via doc comments, so in a 
+modern editor you should hopefully see them as tooltips.
 
-* `element` - DOM element to attach mouse listeners to. Defaults to `document`.
-* `options` - Optional. Supported parameters:
-  * `preventDefaults` whether to prevent default behavior on handled events 
-  * `stopPropagation` same but for propagation
-  * `allowContextMenu` whether to let the context menu appear
-  * `disabled` no input events fire when this option is set
+Otherwise, please see the source ;)
 
-All of the `options` parameters are also settable on the `inputs` object after creation:
 
-```js
-inputs.disabled = true   // temporarily stop emitting events
-```
+## Notes:
 
-#### `inputs.bind( "bindName", "keycode", "keycode2", .. )`
+* When you specify a `domElement`, this module will only track **pointer** inputs (movement, clicks, and scrolls) inside that element. However **keyboard** inputs will be tracked globally at the document level.
+* If you don't specify a DOM element, `document` will be used.
+* For several reasons, this module doesn't call `preventDefault` or `stopPropagation` on mouse or scroll events, even if those properties are set. If you want to prevent parts of your page from scrolling or panning, it's more performant to do so via CSS.
 
-* `bindName` - Virtual keycode for the action being bound (e.g. `move-left`)
-* `keyCode` - one or more keycodes as specified by [vkey](https://github.com/chrisdickinson/vkey/blob/master/index.js) (e.g. `W`, `<tab>`, `<mouse 1>`)
 
-#### `inputs.unbind( "bindName" )`
 
-Removes all key bindings for the given name.
+<br>
 
-#### `inputs.state`
+----
 
-State object populated with these properties:
-* a boolean for whether each keybinding is currently pressed. E.g. `inputs.state.jump` is a boolean for whether a key (or keys) bound to the `jump` action are currently pressed.
-* `dx`, `dy` - How far the mouse has (cumulatively) moved since `inputs#tick` was last called.
-* `scrollx`, `scrolly`, `scrollz` - accumulated scroll amounts (scaled to pixel values) since `inputs#tick` was last called.
+## History
 
-#### `inputs.tick()`
+ * `0.4.0` Modernization pass - adopts real physical key codes, Pointer events (still fallback to mouse), etc. Also adds proper docs/types.  
+ Breaking changes:
+   * now an ES module exporting a named `class`, not a factory function
+   * Key binding names now use [KeyboardEvent.code](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/code) strings (e.g. `KeyA`, `Space`)
+   * Bindings for mouse buttons are now `Mouse1`, `Mouse2`..
+   * Mouse/scroll values (`dx,dy,scrollx,scrolly`) moved from `inputs.state` to `inputs.pointerState`
+ * `0.3.0` Stable release
 
-Resets (cumulative) `state.dx`/`state.dy` values. Call this in your game loop (after checking inputs) 
-if you want to use this module to track inputs each frame.
 
-## Events
+----
 
-#### `inputs.down.on(binding, myFunction)`
+## By
 
-Emits events when a bound key is pressed. E.g. `inputs.down.on('jump', fcn..)` will emit an event when *any* key bound to `jump` is pressed. Redundant events are not sent, so if two keys are bound to the same thing and pressed at the same time, only one event will be sent. The event handler will be passed two arguments:
-* `binding` - the name of the binding that's been triggered
-* `event` - the original (DOM) mouse event
+Made with 🍺 by [Andy Hall](https://fenomas.com).
 
-#### `inputs.up.on(binding, myFunction)`
+License is ISC.
 
-Exactly as previous but for key release events.
-
-## Todo:
-
-* Doesn't yet try to handle edge cases where the user clicks out of the browser while a key is pressed, or similar.
-* The state object could usefully report a number of press events since the last tick, rather than just a boolean. 
-
+Originally modeled after 
+[game-shell](https://github.com/mikolalysenko/game-shell), but probably doesn't resemble it much anymore.
