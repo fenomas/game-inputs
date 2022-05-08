@@ -54,6 +54,13 @@ function myGameLoop() {
   // calling tick() zeroes out cumulative mouse/scroll/press/release values
   inputs.tick()
 }
+
+// you can optionally filter events before they occur - e.g. if you want
+// keyboard events not to fire if control keys are pressed
+inputs.filterEvents = (ev, bindingName) => {
+    if (/^Key/.test(ev.code) && ev.ctrlKey) return false
+    return true
+}
 ```
 
 Here's the [interactive demo](http://fenomas.github.io/game-inputs/).
@@ -88,6 +95,7 @@ Otherwise, please see the source ;)
 
 ## History
 
+ * `0.7.0` Adds `filterEvents()`
  * `0.6.0` Modernization pass - adopts real physical key codes, Pointer events (still fallback to mouse), etc. Also adds proper docs/types.  
  Breaking changes:
    * now an ES module exporting a named `class`, not a factory function

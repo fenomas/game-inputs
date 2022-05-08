@@ -23,6 +23,7 @@ export class GameInputs {
     */
 
     constructor(domElement, options) {
+        this.version = version
         var opts = Object.assign({}, new DefaultOptions(), options || {})
 
         // settings
@@ -37,7 +38,14 @@ export class GameInputs {
         /** When disabled, no binding events will fire. */
         this.disabled = !!opts.disabled
 
-        this.version = version
+        /** 
+         * Optional filter function. Useful if you want to, e.g., 
+         * ignore a key binding if ctrl/alt are pressed, but allow that
+         * same binding if it originated from a mouse event.
+         * @param {KeyboardEvent & MouseEvent} ev
+         * @param {string} bindingName
+        */
+        this.filterEvents = (ev, bindingName) => true
 
         // emitters
         /** 
@@ -330,21 +338,29 @@ function onWindowBlur(inputs) {
 function handleKeyEvent(code, nowDown, inputs, ev) {
     var bindings = inputs._keyBindmap[code]
     if (!bindings) return
-    // prevent/stop only for non-mouse events
-    if (!('button' in ev)) {
-        if (inputs.preventDefaults) ev.preventDefault()
-        if (inputs.stopPropagation) ev.stopPropagation()
-    }
 
-    // if the key's state has changed, handle an event for all bindings
+    // if the key state has changed, handle the event for all bindings
     var prevState = inputs._keyStates[code]
     if (XOR(prevState, nowDown)) {
         inputs._keyStates[code] = nowDown
-        // for each binding: emit an event, and update cached state information
         bindings.forEach(bindingName => {
+            // allow client to filter events if applicable
+            var allow = (inputs.filterEvents) ?
+                inputs.filterEvents(ev, bindingName) : true
+            if (!allow) return
+            // finally emit the event
             handleBindingEvent(bindingName, nowDown, inputs, ev)
         })
     }
+
+    // prevent/stop only for non-mouse events
+    if (!('button' in ev)) {
+        if (inputs.preventDefaults && !ev.defaultPrevented) {
+            ev.preventDefault()
+        }
+        if (inputs.stopPropagation) ev.stopPropagation()
+    }
+
 }
 
 
