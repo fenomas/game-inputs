@@ -63,7 +63,7 @@ export class GameInputs {
          * The boolean state of whether each binding is currently pressed.
          * 
          * `inputs.state['move-left'] // true if a bound key is pressed`
-         * @type {Object.<string, boolean>} 
+         * @type {{ [key:string]: boolean }} 
         */
         this.state = {}
 
@@ -82,25 +82,25 @@ export class GameInputs {
         /** 
          * How many times each binding has been **pressed** 
          * since the last time `tick` was called.
-         * @type {Object.<string, number>}
+         * @type {{ [key:string]: number }} 
         */
         this.pressCount = {}
 
         /** 
          * How many times each binding has been **released** 
          * since the last time `tick` was called.
-         * @type {Object.<string, number>}
+         * @type {{ [key:string]: number }} 
         */
         this.releaseCount = {}
 
 
 
         // internal state
-        /** @private @type {Object.<string, string[]>}   code -> [...binding names] */
+        /** @private @type {{ [key:string]: string[] }}   code -> [...binding names] */
         this._keyBindmap = {}
-        /** @private @type {Object.<string, boolean>} code -> isDown */
+        /** @private @type {{ [key:string]: boolean }} code -> isDown */
         this._keyStates = {}
-        /** @private @type {Object.<string, number>}  bindingName -> currCt */
+        /** @private @type {{ [key:string]: number }}  bindingName -> currCt */
         this._bindPressCount = {}
         /** @private */
         this._touches = { lastX: 0, lastY: 0, currID: null }
