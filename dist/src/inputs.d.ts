@@ -6,6 +6,7 @@ export class GameInputs {
      * @param {DefaultOptions} options
     */
     constructor(domElement: HTMLElement, options: DefaultOptions);
+    version: string;
     /** The HTMLElement that `inputs` is bound to. */
     element: Document | HTMLElement;
     /** When true, all key events with bindings will call `preventDefaults`. */
@@ -16,7 +17,14 @@ export class GameInputs {
     allowContextMenu: boolean;
     /** When disabled, no binding events will fire. */
     disabled: boolean;
-    version: string;
+    /**
+     * Optional filter function. Useful if you want to, e.g.,
+     * ignore a key binding if ctrl/alt are pressed, but allow that
+     * same binding if it originated from a mouse event.
+     * @param {KeyboardEvent & MouseEvent} ev
+     * @param {string} bindingName
+    */
+    filterEvents: (ev: KeyboardEvent & MouseEvent, bindingName: string) => boolean;
     /**
      * Event emitter for binding **press** events.
      * The original mouse or key event will be passed as an argument.
@@ -31,10 +39,10 @@ export class GameInputs {
      * The boolean state of whether each binding is currently pressed.
      *
      * `inputs.state['move-left'] // true if a bound key is pressed`
-     * @type {Object.<string, boolean>}
+     * @type {{ [key:string]: boolean }}
     */
     state: {
-        [x: string]: boolean;
+        [key: string]: boolean;
     };
     /**
      * Numeric counters representing accumulated pointer/scroll inputs
@@ -50,24 +58,24 @@ export class GameInputs {
     /**
      * How many times each binding has been **pressed**
      * since the last time `tick` was called.
-     * @type {Object.<string, number>}
+     * @type {{ [key:string]: number }}
     */
     pressCount: {
-        [x: string]: number;
+        [key: string]: number;
     };
     /**
      * How many times each binding has been **released**
      * since the last time `tick` was called.
-     * @type {Object.<string, number>}
+     * @type {{ [key:string]: number }}
     */
     releaseCount: {
-        [x: string]: number;
+        [key: string]: number;
     };
-    /** @private @type {Object.<string, string[]>}   code -> [...binding names] */
+    /** @private @type {{ [key:string]: string[] }}   code -> [...binding names] */
     private _keyBindmap;
-    /** @private @type {Object.<string, boolean>} code -> isDown */
+    /** @private @type {{ [key:string]: boolean }} code -> isDown */
     private _keyStates;
-    /** @private @type {Object.<string, number>}  bindingName -> currCt */
+    /** @private @type {{ [key:string]: number }}  bindingName -> currCt */
     private _bindPressCount;
     /** @private */
     private _touches;
