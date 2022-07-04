@@ -107,7 +107,7 @@ export class GameInputs {
 
 
         // register for ALL THE dom events
-        if (document.readyState === 'complete') {
+        if (document.readyState !== 'loading') {
             initEvents(this)
         } else {
             document.addEventListener('DOMContentLoaded', ev => {
