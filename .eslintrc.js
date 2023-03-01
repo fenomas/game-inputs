@@ -1,4 +1,4 @@
-module.exports = {
+export default {
     "extends": "eslint:recommended",
     "env": {
         "browser": true,
@@ -6,6 +6,7 @@ module.exports = {
     },
     "parserOptions": {
         "ecmaVersion": 2017,
+        "sourceType": "module",
     },
     "rules": {
         "strict": ["error", "global"],
