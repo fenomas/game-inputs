@@ -20,13 +20,13 @@ inputs.bind('alt-fire', 'Mouse3')
 
 var allBindings = inputs.getBindings()
 var allKeys = []
-for (var bindingName in allBindings) {
+Object.keys(allBindings).forEach(bindingName => {
     inputs.down.on(bindingName, ev => showOutput(bindingName, true))
     inputs.up.on(bindingName, ev => showOutput(bindingName, false))
     allBindings[bindingName].forEach(key => {
         if (!(allKeys.includes(key))) allKeys.push(key)
     })
-}
+})
 
 // in real game code you'd do something like:
 // inputs.down.on('move-left', () => movePlayerLeft())

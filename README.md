@@ -88,6 +88,11 @@ Otherwise, please see the source ;)
 * For several reasons, this module doesn't call `preventDefault` or `stopPropagation` on mouse or scroll events, even if those properties are set. If you want to prevent parts of your page from scrolling or panning, it's more performant to do so via CSS.
 
 
+## Known issues:
+
+ - On Mac `keyup` events never fire while the Command key is pressed ([see here](https://bugs.chromium.org/p/chromium/issues/detail?id=1393524)), so if the user presses `cmd+A` it's impossible to detect whether the `A` key gets released. There's no great way to work around this - this library errs on the side of avoiding phantom key inputs by emulating an `up` for such key chords when the Command key is released.
+
+
 
 <br>
 

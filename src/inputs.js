@@ -105,6 +105,8 @@ export class GameInputs {
         /** @private */
         this._touches = { lastX: 0, lastY: 0, currID: null }
 
+        /** @private For a macOs bug workaround */
+        this._pressedDuringMeta = {}
 
         // register for ALL THE dom events
         if (document.readyState !== 'loading') {
@@ -238,6 +240,7 @@ function initEvents(inputs) {
 
 function onKeyEvent(inputs, nowDown, ev) {
     handleKeyEvent(ev.code, nowDown, inputs, ev)
+    workaroundMacBug(nowDown, inputs, ev)
 }
 
 function onPointerEvent(inputs, nowDown, ev) {
@@ -402,5 +405,34 @@ function XOR(a, b) {
 }
 
 
+/*
+ *
+ *
+ *    MEHHHH
+ *
+ *
+*/
+
+
+function workaroundMacBug(down, inputs, ev) {
+    var isMeta = /^Meta/.test(ev.code)
+    if (ev.metaKey && !isMeta && down) {
+        // remember any key codes that were pressed while meta is down 
+        inputs._pressedDuringMeta[ev.code] = true
+    } else if (isMeta && !down) {
+        // when meta released, maybe issue keyUps for them
+        for (var code in inputs._pressedDuringMeta) {
+            if (!inputs._keyStates[code]) continue
+            if (/^Mouse\d/.test(code)) continue
+            handleKeyEvent(code, false, inputs, {
+                code: code,
+                note: `This is a mocked KeyboardEvent made by the 'game-inputs' module`,
+                preventDefault: () => { },
+                stopPropagation: () => { },
+            })
+        }
+        inputs._pressedDuringMeta = {}
+    }
+}
 
 
