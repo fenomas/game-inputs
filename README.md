@@ -100,6 +100,7 @@ Otherwise, please see the source ;)
 
 ## History
 
+ * `0.8.0` Works around mac-only command key bug
  * `0.7.0` Adds `filterEvents()`
  * `0.6.0` Modernization pass - adopts real physical key codes, Pointer events (still fallback to mouse), etc. Also adds proper docs/types.  
  Breaking changes:

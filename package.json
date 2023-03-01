@@ -1,6 +1,6 @@
 {
     "name": "game-inputs",
-    "version": "0.7.0",
+    "version": "0.8.0",
     "description": "Simple library to abstract key/mouse events for games.",
     "main": "src/inputs.js",
     "typings": "dist/src/inputs.d.ts",

@@ -79,6 +79,8 @@ export class GameInputs {
     private _bindPressCount;
     /** @private */
     private _touches;
+    /** @private For a macOs bug workaround */
+    private _pressedDuringMeta;
     /**
      * Binds one or more physical keys to an arbitrary binding name.
      * Key strings should align to `KeyboardEvent.code` strings -
